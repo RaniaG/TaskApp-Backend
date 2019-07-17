@@ -52,7 +52,7 @@ namespace Test.NoAuth.Web.Startup
             }
 
             app.UseStaticFiles();
-
+            
             app.UseMvc(routes =>
             {
                 routes.MapRoute(

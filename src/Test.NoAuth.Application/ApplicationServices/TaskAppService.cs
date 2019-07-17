@@ -10,7 +10,7 @@ using Abp.ObjectMapping;
 
 namespace Test.NoAuth.ApplicationServices
 {
-    class TaskAppService:ApplicationService
+    public class TaskAppService:ApplicationService
     {
         private ITaskManager _taskManager { get; set; }
         public IObjectMapper _objectMapper { get; set; }
@@ -19,10 +19,10 @@ namespace Test.NoAuth.ApplicationServices
             _taskManager = taskManager;
             _objectMapper = objectMapper;
         }
-        public List<TaskItemDTO> GetAllTasks()
+        public IQueryable<TaskItemDTO> GetAll()
         {
             IQueryable<TaskItem> tasks= _taskManager.GetAllTasks();
-            return tasks.Select(t => _objectMapper.Map<TaskItemDTO>(t)).ToList();
+            return tasks.Select(t => _objectMapper.Map<TaskItemDTO>(t));
         }
         public TaskItemDTO CreateTask(TaskItemDTO taskDTO)
         {
