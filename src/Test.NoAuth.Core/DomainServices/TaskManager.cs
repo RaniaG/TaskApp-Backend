@@ -2,13 +2,15 @@
 using Abp.Domain.Services;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using Test.NoAuth.DomainServicesInterfaces;
+using Test.NoAuth.Enums;
 using Test.NoAuth.TaskBC;
 
 namespace Test.NoAuth.DomainServices
 {
-    class TaskManager: DomainService,ITaskManager
+    public class TaskManager: DomainService,ITaskManager
     {
         private readonly IRepository<TaskItem> _taskRepository;
 
@@ -16,9 +18,9 @@ namespace Test.NoAuth.DomainServices
         {
             _taskRepository = taskRepository;
         }
-        public void CreateTask(TaskItem task)
+        public TaskItem CreateTask(TaskItem task)
         {
-            _taskRepository.Insert(task);
+           return  _taskRepository.Insert(task);
         }
         public bool DeleteTask(int TaskId)
         {
@@ -58,6 +60,21 @@ namespace Test.NoAuth.DomainServices
             return task;
         }
 
-        
+        public IQueryable<TaskItem> GetAllTasks()
+        {
+            return _taskRepository.GetAll();
+        }
+        public IQueryable<TaskItem> GetInProgressTasks()
+        {
+            return _taskRepository.GetAll().Where(t => t.Status == TaskStatusEnum.InProgress && t.IsDeleted == false);
+        }
+        public IQueryable<TaskItem> GetDoneTasks()
+        {
+            return _taskRepository.GetAll().Where(t => t.Status == TaskStatusEnum.Done&&t.IsDeleted==false);
+        }
+        public IQueryable<TaskItem> GetDeletedTasks()
+        {
+            return _taskRepository.GetAll().Where(t => t.IsDeleted);
+        }
     }
 }
