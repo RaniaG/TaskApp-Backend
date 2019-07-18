@@ -8,46 +8,77 @@ using Microsoft.EntityFrameworkCore;
 using Test.NoAuth.ApplicationServices;
 using Test.NoAuth.DTOs;
 using Test.NoAuth.EntityFrameworkCore;
+using Test.NoAuth.Enums;
 using Test.NoAuth.TaskBC;
 
 namespace Test.NoAuth.Web.Controllers
 {
-    [Route("api/[controller]")]
+    //[Route("api/[controller]")]
     [ApiController]
     public class TaskItemsController : NoAuthControllerBase
     {
         private readonly NoAuthDbContext _context;
-        //private TaskAppService _taskAppService { get; set; }
+        private TaskAppService _taskAppService { get; set; }
 
-        public TaskItemsController(NoAuthDbContext context)
+        public TaskItemsController(NoAuthDbContext context, TaskAppService taskAppService)
         {
             _context = context;
-            //_taskAppService = taskAppService;
+            _taskAppService = taskAppService;
         }
 
-        // GET: api/TaskItems
         [HttpGet]
-        //[Route("TaskItems")]
-        public IEnumerable<TaskItemDTO> GetAll()
+        [Route("api/TaskItems")]
+        public ActionResult<IEnumerable<TaskItemGetAllOutputDTO>> GetAll()
         {
-            //return _taskAppService.GetAll();
-            return null;
+            return _taskAppService.GetAll().ToList();
+        }
+        [HttpGet]
+        [Route("api/TaskItems/UnDeleted")]
+        public ActionResult<IEnumerable<TaskItemDTO>> GetAllUndelted()
+        {
+            return _taskAppService.GetAllUndeleted().ToList();
+        }
+        
+        [HttpPost]
+        [Route("api/TaskItem")]
+        public ActionResult<TaskItemDTO> PostTaskItem(CreateTaskItemDTOInput task)
+        {
+            return _taskAppService.CreateTask(task);
         }
 
-        //// GET: api/TaskItems/5
-        //[HttpGet("{id}")]
-        //public async Task<ActionResult<TaskItem>> GetTaskItem(int id)
-        //{
-        //    var taskItem = await _context.Tasks.FindAsync(id);
+        [HttpPatch]
+        [Route("api/TaskItem/{id}")]
+        public ActionResult<TaskItemDTO> PatchTaskItem(int id, EditTaskItemDTOInput taskInput)
+        {
 
-        //    if (taskItem == null)
-        //    {
-        //        return NotFound();
-        //    }
-
-        //    return taskItem;
-        //}
-
+            try {
+                TaskItemDTO task = _taskAppService.GetById(id);
+            //if (task == null || ((TaskItemGetByIdOutputDTO)task).IsDeleted)
+                if (taskInput.Status != null)
+                    task= _taskAppService.ChangeTaskStatus(id,(TaskStatusEnum)taskInput.Status);
+                if(taskInput.Body!=null)
+                   task= _taskAppService.ChangeTaskBody(id,taskInput.Body);
+                return task;
+            } catch (Exception e)
+            {
+                return NotFound();
+            }
+        }
+        [HttpDelete]
+        [Route("api/TaskItem/{id}")]
+        public ActionResult DeleteTaskItem(int id)
+        {
+            try
+            {
+                if (_taskAppService.DeleteTask(id))
+                    return Ok();
+                else return NotFound();
+            }
+            catch (Exception e)
+            {
+                return NotFound();
+            }
+        }
         //// PUT: api/TaskItems/5
         //[HttpPut("{id}")]
         //public async Task<IActionResult> PutTaskItem(int id, TaskItem taskItem)

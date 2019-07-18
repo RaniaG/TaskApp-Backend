@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Test.NoAuth.EntityFrameworkCore;
 
 namespace Test.NoAuth.Migrations
 {
     [DbContext(typeof(NoAuthDbContext))]
-    partial class NoAuthDbContextModelSnapshot : ModelSnapshot
+    [Migration("20190718083003_addedSoftDeleteToTaskITems")]
+    partial class addedSoftDeleteToTaskITems
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

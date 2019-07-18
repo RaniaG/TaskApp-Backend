@@ -7,6 +7,7 @@ using Test.NoAuth.DTOs;
 using Test.NoAuth.TaskBC;
 using System.Linq;
 using Abp.ObjectMapping;
+using Test.NoAuth.Enums;
 
 namespace Test.NoAuth.ApplicationServices
 {
@@ -19,14 +20,36 @@ namespace Test.NoAuth.ApplicationServices
             _taskManager = taskManager;
             _objectMapper = objectMapper;
         }
-        public IQueryable<TaskItemDTO> GetAll()
+        public IQueryable<TaskItemDTO> GetAllUndeleted()
         {
-            IQueryable<TaskItem> tasks= _taskManager.GetAllTasks();
+            IQueryable<TaskItem> tasks= _taskManager.GetAllUndeleted();
             return tasks.Select(t => _objectMapper.Map<TaskItemDTO>(t));
         }
-        public TaskItemDTO CreateTask(TaskItemDTO taskDTO)
+        public IEnumerable<TaskItemGetAllOutputDTO> GetAll()
+        {
+            List<TaskItem> tasks = _taskManager.GetAll();
+            return tasks.Select(t => _objectMapper.Map<TaskItemGetAllOutputDTO>(t));
+        }
+        public TaskItemGetByIdOutputDTO GetById(int Id)
+        {
+            return _objectMapper.Map<TaskItemGetByIdOutputDTO>(_taskManager.GetById(Id));
+        }
+        public TaskItemDTO CreateTask(CreateTaskItemDTOInput taskDTO)
         {
            return _objectMapper.Map<TaskItemDTO>(_taskManager.CreateTask(_objectMapper.Map<TaskItem>(taskDTO)));
+        }
+        public TaskItemDTO ChangeTaskStatus(int TaskId, TaskStatusEnum newstatus)
+        {
+            return _objectMapper.Map<TaskItemDTO>(_taskManager.ChangeStatus(TaskId, newstatus));
+        }
+        public TaskItemDTO ChangeTaskBody (int TaskId, string Body)
+        {
+            
+            return _objectMapper.Map<TaskItemDTO>(_taskManager.ChangeBody(TaskId, Body));
+        }
+        public bool DeleteTask(int TaskId)
+        {
+            return _taskManager.DeleteTask(TaskId);
         }
         
     }

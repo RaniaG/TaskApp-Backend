@@ -1,5 +1,6 @@
 ﻿using Abp.Domain.Repositories;
 using Abp.Domain.Services;
+using Abp.Domain.Uow;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,14 +14,17 @@ namespace Test.NoAuth.DomainServices
     public class TaskManager: DomainService,ITaskManager
     {
         private readonly IRepository<TaskItem> _taskRepository;
+        private IUnitOfWorkManager _unitOfWorkManager { get; set; }
 
-        public TaskManager(IRepository<TaskItem> taskRepository)
+        public TaskManager(IUnitOfWorkManager unitOfWorkManager,IRepository<TaskItem> taskRepository)
         {
             _taskRepository = taskRepository;
+            _unitOfWorkManager = unitOfWorkManager;
         }
         public TaskItem CreateTask(TaskItem task)
         {
-           return  _taskRepository.Insert(task);
+           int Id= _taskRepository.InsertAndGetId(task);
+           return _taskRepository.Get(Id);
         }
         public bool DeleteTask(int TaskId)
         {
@@ -40,41 +44,37 @@ namespace Test.NoAuth.DomainServices
             return task;
         }
 
-        public TaskItem MarkAsDone(int TaskId)
+        public TaskItem ChangeStatus(int TaskId,TaskStatusEnum status)
         {
             TaskItem task = _taskRepository.FirstOrDefault(TaskId);
             if (task == null)
                 return null;
-            task.RestoreTask();
+            task.Status=status;
             _taskRepository.Update(task);
             return task;
         }
 
-        public TaskItem MarkAsInProgress(int TaskId)
+        
+        public TaskItem ChangeBody(int TaskId, string newBody)
         {
-            TaskItem task = _taskRepository.FirstOrDefault(TaskId);
-            if (task == null)
-                return null;
-            task.TaskInProgress();
-            _taskRepository.Update(task);
-            return task;
+            return _taskRepository.Update(TaskId, t => t.Body = newBody);
+        }
+        public TaskItem GetById(int Id)
+        {
+            return _taskRepository.Get(Id);
         }
 
-        public IQueryable<TaskItem> GetAllTasks()
+        public IQueryable<TaskItem> GetAllUndeleted()
         {
-            return _taskRepository.GetAll();
+            return _taskRepository.GetAll();   
         }
-        public IQueryable<TaskItem> GetInProgressTasks()
+        public List<TaskItem> GetAll()
         {
-            return _taskRepository.GetAll().Where(t => t.Status == TaskStatusEnum.InProgress && t.IsDeleted == false);
+            using (_unitOfWorkManager.Current.DisableFilter(AbpDataFilters.SoftDelete))
+            {
+                return _taskRepository.GetAllList();
+            }
         }
-        public IQueryable<TaskItem> GetDoneTasks()
-        {
-            return _taskRepository.GetAll().Where(t => t.Status == TaskStatusEnum.Done&&t.IsDeleted==false);
-        }
-        public IQueryable<TaskItem> GetDeletedTasks()
-        {
-            return _taskRepository.GetAll().Where(t => t.IsDeleted);
-        }
+       
     }
 }
