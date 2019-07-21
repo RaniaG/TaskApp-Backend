@@ -26,6 +26,10 @@
     <ProjectReference Include="..\Test.NoAuth.EntityFrameworkCore\Test.NoAuth.EntityFrameworkCore.csproj" />
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="Hangfire" Version="1.7.5" />
+    <PackageReference Include="Hangfire.AspNetCore" Version="1.7.5" />
+    <PackageReference Include="Hangfire.Core" Version="1.7.5" />
+    <PackageReference Include="Hangfire.SqlServer" Version="1.7.5" />
     <PackageReference Include="Microsoft.AspNetCore" Version="2.1.1" />
     <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="2.1.1" />
     <PackageReference Include="System.Net.Primitives" Version="4.3.0" />
@@ -53,5 +57,10 @@
   </ItemGroup>
   <ItemGroup>
     <DotNetCliToolReference Include="Microsoft.EntityFrameworkCore.Tools.DotNet" Version="2.0.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Update="appsettings.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 </Project>

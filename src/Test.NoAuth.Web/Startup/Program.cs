@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using System.Reflection;
 using Microsoft.AspNetCore.Hosting;
 
 namespace Test.NoAuth.Web.Startup
@@ -9,7 +10,8 @@ namespace Test.NoAuth.Web.Startup
         {
             var host = new WebHostBuilder()
                 .UseKestrel()
-                .UseContentRoot(Directory.GetCurrentDirectory())
+                //.UseContentRoot(Directory.GetCurrentDirectory())
+                .UseContentRoot(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location))
                 .UseIISIntegration()
                 .UseStartup<Startup>()
                 .Build();

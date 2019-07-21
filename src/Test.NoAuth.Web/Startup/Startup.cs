@@ -9,11 +9,19 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Hangfire;
+using Hangfire.SqlServer;
+using Microsoft.Extensions.Configuration;
 
 namespace Test.NoAuth.Web.Startup
 {
     public class Startup
     {
+        public IConfiguration Configuration { get; }
+        public Startup(IConfiguration configuration)
+        {
+            Configuration = configuration;
+        }
         public IServiceProvider ConfigureServices(IServiceCollection services)
         {
             //Configure DbContext
@@ -21,6 +29,27 @@ namespace Test.NoAuth.Web.Startup
             {
                 DbContextOptionsConfigurer.Configure(options.DbContextOptions, options.ConnectionString);
             });
+            //returns null!!!
+            string conn=Configuration.GetConnectionString("HangfireConnection");
+            
+
+            // Add Hangfire services.
+            services.AddHangfire(configuration => configuration
+                .SetDataCompatibilityLevel(CompatibilityLevel.Version_170)
+                .UseSimpleAssemblyNameTypeSerializer()
+                .UseRecommendedSerializerSettings()
+                .UseSqlServerStorage("Server=.;Database=HangfireTest;Integrated Security=True;", new SqlServerStorageOptions
+                {
+                    CommandBatchMaxTimeout = TimeSpan.FromMinutes(5),
+                    SlidingInvisibilityTimeout = TimeSpan.FromMinutes(5),
+                    QueuePollInterval = TimeSpan.Zero,
+                    UseRecommendedIsolationLevel = true,
+                    UsePageLocksOnDequeue = true,
+                    DisableGlobalLocks = true
+                }));
+
+            // Add the processing server as IHostedService
+            services.AddHangfireServer();
 
             services.AddMvc(options =>
             {
@@ -37,7 +66,7 @@ namespace Test.NoAuth.Web.Startup
             });
         }
 
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
+        public void Configure(IApplicationBuilder app, IBackgroundJobClient backgroundJobs,  IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
             app.UseAbp(); //Initializes ABP framework.
 
@@ -52,7 +81,11 @@ namespace Test.NoAuth.Web.Startup
             }
 
             app.UseStaticFiles();
-            
+
+
+            app.UseHangfireDashboard();
+            backgroundJobs.Enqueue(() => Console.WriteLine("Hello world from Hangfire!"));
+
             app.UseMvc(routes =>
             {
                 routes.MapRoute(
