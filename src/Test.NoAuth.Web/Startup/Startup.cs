@@ -12,6 +12,9 @@ using Microsoft.Extensions.Logging;
 using Hangfire;
 using Hangfire.SqlServer;
 using Microsoft.Extensions.Configuration;
+using Microsoft.AspNetCore.Mvc.Filters;
+using Test.NoAuth.Web.Hangfire.Auth;
+using Hangfire.Dashboard;
 
 namespace Test.NoAuth.Web.Startup
 {
@@ -29,20 +32,23 @@ namespace Test.NoAuth.Web.Startup
             {
                 DbContextOptionsConfigurer.Configure(options.DbContextOptions, options.ConnectionString);
             });
-            //returns null!!!
+            //returns null!!! //connection string must be defined in app.config or web.config
             string conn=Configuration.GetConnectionString("HangfireConnection");
-            
+
 
             // Add Hangfire services.
             services.AddHangfire(configuration => configuration
                 .SetDataCompatibilityLevel(CompatibilityLevel.Version_170)
                 .UseSimpleAssemblyNameTypeSerializer()
                 .UseRecommendedSerializerSettings()
+                //.UseSqlServerStorage("HangfireConnection", new SqlServerStorageOptions
                 .UseSqlServerStorage("Server=.;Database=HangfireTest;Integrated Security=True;", new SqlServerStorageOptions
                 {
                     CommandBatchMaxTimeout = TimeSpan.FromMinutes(5),
                     SlidingInvisibilityTimeout = TimeSpan.FromMinutes(5),
-                    QueuePollInterval = TimeSpan.Zero,
+                    QueuePollInterval = TimeSpan.FromSeconds(60),
+                    PrepareSchemaIfNecessary = false, //wont recreate the db if it doesnt exist
+                    //QueuePollInterval = TimeSpan.Zero, //time for polling
                     UseRecommendedIsolationLevel = true,
                     UsePageLocksOnDequeue = true,
                     DisableGlobalLocks = true
@@ -82,8 +88,13 @@ namespace Test.NoAuth.Web.Startup
 
             app.UseStaticFiles();
 
+            //Authorization filters for hangfire dashboard
+            app.UseHangfireDashboard("/hangfire",new DashboardOptions() {
+                Authorization =new[] {new HangfireAuthFilter() },
+                //IsReadOnlyFunc = (DashboardContext context) => true, //make dashboard readonly
+                //AppPath = "http://your-app.net" //back to app button config
+            });
 
-            app.UseHangfireDashboard();
             backgroundJobs.Enqueue(() => Console.WriteLine("Hello world from Hangfire!"));
 
             app.UseMvc(routes =>
