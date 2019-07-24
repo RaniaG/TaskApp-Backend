@@ -14,5 +14,7 @@ namespace Test.NoAuth.DTOs
         public string Body { get; set; }
         public DateTime CreationTime { get; set; }
         public TaskStatusEnum Status { get; set; }
+        public DateTime? DeadLine { get; set; }
+        public bool Overdue { get; set; }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Data.SqlClient;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -10,6 +11,7 @@ using Test.NoAuth.DTOs;
 using Test.NoAuth.EntityFrameworkCore;
 using Test.NoAuth.Enums;
 using Test.NoAuth.TaskBC;
+using Hangfire;
 
 namespace Test.NoAuth.Web.Controllers
 {
@@ -43,7 +45,18 @@ namespace Test.NoAuth.Web.Controllers
         [Route("api/TaskItem")]
         public ActionResult<TaskItemDTO> PostTaskItem(CreateTaskItemDTOInput task)
         {
-            return _taskAppService.CreateTask(task);
+
+            TimeSpan ts = (DateTime)task.DeadLine-DateTime.Now;
+            if (task.DeadLine != null && ts.Days < 0)
+                return BadRequest();
+            TaskItemDTO TaskDTO = _taskAppService.CreateTask(task);
+            //must wait for task to get id
+            if (TaskDTO != null&&task.DeadLine!=null)
+            {
+                BackgroundJob.Schedule<TaskAppService>((x) => x.MarkTaskAsOverdue(TaskDTO.Id), TimeSpan.FromDays(ts.TotalDays));
+                //BackgroundJob.Enqueue<TaskAppService>((x) => x.MarkTaskAsOverdue(TaskDTO.Id));
+            }
+            return TaskDTO;
         }
 
         [HttpPatch]

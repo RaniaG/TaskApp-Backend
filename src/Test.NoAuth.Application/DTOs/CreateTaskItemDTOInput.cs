@@ -9,5 +9,7 @@ namespace Test.NoAuth.DTOs
     {
         [Required]
         public string Body { get; set; }
+
+        public DateTime? DeadLine { get; set; }
     }
 }
