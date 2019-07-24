@@ -12,6 +12,7 @@ namespace Test.NoAuth.DomainServicesInterfaces
     {
         TaskItem CreateTask(TaskItem task);
         bool DeleteTask(int TaskId);
+        bool HardDeleteTask(TaskItem Task);
         TaskItem RestoreTask(int TaskId);
         TaskItem ChangeStatus(int TaskId, TaskStatusEnum status);
         TaskItem ChangeBody(int TaskId, string newBody);
@@ -19,5 +20,6 @@ namespace Test.NoAuth.DomainServicesInterfaces
         List<TaskItem> GetAll();
         TaskItem GetById(int Id);
         void MarkAsOverdue(int TaskId);
+       
     }
 }

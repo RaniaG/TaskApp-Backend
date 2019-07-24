@@ -15,6 +15,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Test.NoAuth.Web.Hangfire.Auth;
 using Hangfire.Dashboard;
+using Test.NoAuth.ApplicationServices;
 
 namespace Test.NoAuth.Web.Startup
 {
@@ -95,7 +96,6 @@ namespace Test.NoAuth.Web.Startup
                 //AppPath = "http://your-app.net" //back to app button config
             });
 
-            backgroundJobs.Enqueue(() => Console.WriteLine("Hello world from Hangfire!"));
 
             app.UseMvc(routes =>
             {
@@ -103,6 +103,7 @@ namespace Test.NoAuth.Web.Startup
                     name: "default",
                     template: "{controller=Home}/{action=Index}/{id?}");
             });
+            //RecurringJob.AddOrUpdate<TaskAppService>("HDRJ", x => x.HardDeleteTasks(), Cron.Daily);
         }
     }
 }

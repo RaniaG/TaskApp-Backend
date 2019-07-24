@@ -26,14 +26,7 @@ namespace Test.NoAuth.DomainServices
            int Id= _taskRepository.InsertAndGetId(task);
            return _taskRepository.Get(Id);
         }
-        public bool DeleteTask(int TaskId)
-        {
-            TaskItem task = _taskRepository.FirstOrDefault(TaskId);
-            if (task == null)
-                return false;
-            _taskRepository.Delete(TaskId);
-            return true;
-        }
+        
         public TaskItem RestoreTask(int TaskId)
         {
             TaskItem task= _taskRepository.FirstOrDefault(TaskId);
@@ -80,6 +73,23 @@ namespace Test.NoAuth.DomainServices
             TaskItem task=_taskRepository.Get(TaskId);
             task.Overdue = true;
             _taskRepository.Update(task);
+        }
+        public bool DeleteTask(int TaskId)
+        {
+            TaskItem task = _taskRepository.FirstOrDefault(TaskId);
+            if (task == null)
+                return false;
+            task.DeletedAt = DateTime.Now;
+            _taskRepository.Update(task);
+            //save changes before delete
+            _taskRepository.Delete(TaskId);
+            return true;
+        }
+
+        public bool HardDeleteTask(TaskItem task)
+        {
+            _taskRepository.HardDelete(task);
+            return true;
         }
     }
 }

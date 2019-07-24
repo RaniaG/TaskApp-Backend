@@ -16,6 +16,7 @@ namespace Test.NoAuth.TaskBC
         public DateTime CreationTime { get; set; }
         public TaskStatusEnum Status { get; set; }
         public bool IsDeleted { get; set; }
+        public DateTime? DeletedAt { get; set; }
 
         public DateTime? DeadLine { get; set; }
 

@@ -54,7 +54,17 @@ namespace Test.NoAuth.ApplicationServices
         {
             _taskManager.MarkAsOverdue(TaskId);
         }
-
+       
+        public void HardDeleteTasks()
+        {
+            //to delete tasks which have been marked as deleted for more than 30 days
+            IEnumerable<TaskItem> tasks = _taskManager.GetAll().Where(x => x.IsDeleted);
+            foreach (TaskItem item in tasks)
+            {
+                if((DateTime.Now-(DateTime)item.DeletedAt).TotalDays>=30)
+                    _taskManager.HardDeleteTask(item);
+            }
+        }
 
     }
 }
