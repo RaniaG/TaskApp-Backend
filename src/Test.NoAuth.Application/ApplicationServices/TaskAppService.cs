@@ -44,13 +44,17 @@ namespace Test.NoAuth.ApplicationServices
         }
         public TaskItemDTO ChangeTaskBody (int TaskId, string Body)
         {
-            
             return _objectMapper.Map<TaskItemDTO>(_taskManager.ChangeBody(TaskId, Body));
         }
         public bool DeleteTask(int TaskId)
         {
             return _taskManager.DeleteTask(TaskId);
         }
-        
+        public void MarkTaskAsOverdue(int TaskId)
+        {
+            _taskManager.MarkAsOverdue(TaskId);
+        }
+
+
     }
 }

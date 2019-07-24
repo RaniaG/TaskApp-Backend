@@ -18,5 +18,6 @@ namespace Test.NoAuth.DomainServicesInterfaces
         IQueryable<TaskItem> GetAllUndeleted();
         List<TaskItem> GetAll();
         TaskItem GetById(int Id);
+        void MarkAsOverdue(int TaskId);
     }
 }

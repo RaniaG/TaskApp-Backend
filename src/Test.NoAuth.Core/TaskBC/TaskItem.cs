@@ -17,10 +17,15 @@ namespace Test.NoAuth.TaskBC
         public TaskStatusEnum Status { get; set; }
         public bool IsDeleted { get; set; }
 
+        public DateTime? DeadLine { get; set; }
+
+        public bool Overdue { get; set; }
+
         public TaskItem()
         {
             CreationTime = DateTime.Now;
             Status = TaskStatusEnum.InProgress;
+            //DeadLine = default(DateTime);
         }
         public void DeleteTask()
         {

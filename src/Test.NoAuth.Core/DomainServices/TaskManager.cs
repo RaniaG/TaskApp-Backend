@@ -75,6 +75,10 @@ namespace Test.NoAuth.DomainServices
                 return _taskRepository.GetAllList();
             }
         }
-       
+        public void MarkAsOverdue(int TaskId)
+        {
+            TaskItem task=_taskRepository.Get(TaskId);
+            task.Overdue = true;
+        }
     }
 }
