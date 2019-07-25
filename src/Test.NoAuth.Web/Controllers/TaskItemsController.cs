@@ -53,7 +53,7 @@ namespace Test.NoAuth.Web.Controllers
             //must wait for task to get id
             if (TaskDTO != null&&task.DeadLine!=null)
             {
-                BackgroundJob.Schedule<TaskAppService>((x) => x.MarkTaskAsOverdue(TaskDTO.Id), TimeSpan.FromDays(ts.TotalDays));
+                BackgroundJob.Schedule<ITaskAppService>((x) => x.MarkTaskAsOverdue(TaskDTO.Id), TimeSpan.FromDays(ts.TotalDays));
                 //BackgroundJob.Enqueue<TaskAppService>((x) => x.MarkTaskAsOverdue(TaskDTO.Id));
             }
             return TaskDTO;

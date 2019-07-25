@@ -103,7 +103,9 @@ namespace Test.NoAuth.Web.Startup
                     name: "default",
                     template: "{controller=Home}/{action=Index}/{id?}");
             });
-            //RecurringJob.AddOrUpdate<TaskAppService>("HDRJ", x => x.HardDeleteTasks(), Cron.Daily);
+
+            //delete tasks which have been soft deleted for more than 30 days
+            RecurringJob.AddOrUpdate<ITaskAppService>("HDRJ", x => x.HardDeleteTasks(), Cron.Daily);
         }
     }
 }

@@ -11,7 +11,7 @@ using Test.NoAuth.Enums;
 
 namespace Test.NoAuth.ApplicationServices
 {
-    public class TaskAppService:ApplicationService
+    public class TaskAppService:ApplicationService, ITaskAppService
     {
         private ITaskManager _taskManager { get; set; }
         public IObjectMapper _objectMapper { get; set; }
@@ -61,8 +61,9 @@ namespace Test.NoAuth.ApplicationServices
             IEnumerable<TaskItem> tasks = _taskManager.GetAll().Where(x => x.IsDeleted);
             foreach (TaskItem item in tasks)
             {
+                 //if ((DateTime.Now - (DateTime)item.DeletedAt).Minutes >= 1)
                 if((DateTime.Now-(DateTime)item.DeletedAt).TotalDays>=30)
-                    _taskManager.HardDeleteTask(item);
+                        _taskManager.HardDeleteTask(item);
             }
         }
 

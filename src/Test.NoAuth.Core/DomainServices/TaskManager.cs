@@ -80,9 +80,9 @@ namespace Test.NoAuth.DomainServices
             if (task == null)
                 return false;
             task.DeletedAt = DateTime.Now;
+            task.IsDeleted = true;
             _taskRepository.Update(task);
-            //save changes before delete
-            _taskRepository.Delete(TaskId);
+            //cant use _taskRepository.Delete bec deletedAt doesnt get set in DB
             return true;
         }
 
