@@ -6,13 +6,16 @@ using Test.NoAuth.Configuration;
 using Test.NoAuth.EntityFrameworkCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
+using Abp.Hangfire;
+using Abp.Hangfire.Configuration;
 
 namespace Test.NoAuth.Web.Startup
 {
     [DependsOn(
         typeof(NoAuthApplicationModule), 
         typeof(NoAuthEntityFrameworkCoreModule), 
-        typeof(AbpAspNetCoreModule))]
+        typeof(AbpAspNetCoreModule),
+    typeof(AbpHangfireAspNetCoreModule))]
     public class NoAuthWebModule : AbpModule
     {
         private readonly IConfigurationRoot _appConfiguration;
@@ -32,6 +35,9 @@ namespace Test.NoAuth.Web.Startup
                 .CreateControllersForAppServices(
                     typeof(NoAuthApplicationModule).GetAssembly()
                 );
+
+            //to delegate all background jobs to hangfire
+            Configuration.BackgroundJobs.UseHangfire();
         }
 
         public override void Initialize()

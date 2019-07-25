@@ -21,7 +21,11 @@ namespace Test.NoAuth.Web.Hangfire.CustomLog
             // Writing a message somewhere, make sure you also include the exception parameter,
             // because it usually contain valuable information, but it can be `null` for regular
             // messages.
-            Console.WriteLine(String.Format("{0}: {1} {2}", logLevel, messageFunc(), exception));
+            using (System.IO.StreamWriter file =
+            new System.IO.StreamWriter(@"./HangfireLog.txt", true))
+            {
+                file.WriteLine(String.Format("**At {0}: {1} {2} {3}",DateTime.Now.ToString(), logLevel, messageFunc(), exception));
+            }
 
             // Telling LibLog the message was successfully logged.
             return true;

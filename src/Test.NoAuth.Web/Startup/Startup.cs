@@ -16,6 +16,8 @@ using Microsoft.AspNetCore.Mvc.Filters;
 using Test.NoAuth.Web.Hangfire.Auth;
 using Hangfire.Dashboard;
 using Test.NoAuth.ApplicationServices;
+using Hangfire.Logging;
+using Test.NoAuth.Web.Hangfire.CustomLog;
 
 namespace Test.NoAuth.Web.Startup
 {
@@ -55,6 +57,8 @@ namespace Test.NoAuth.Web.Startup
                     DisableGlobalLocks = true
                 }));
 
+            
+
             // Add the processing server as IHostedService
             services.AddHangfireServer();
 
@@ -89,6 +93,9 @@ namespace Test.NoAuth.Web.Startup
 
             app.UseStaticFiles();
 
+            //setup custom logger for hangfire
+            LogProvider.SetCurrentLogProvider(new CustomLogProvider());
+            app.UseHangfireServer();
             //Authorization filters for hangfire dashboard
             app.UseHangfireDashboard("/hangfire",new DashboardOptions() {
                 Authorization =new[] {new HangfireAuthFilter() },
