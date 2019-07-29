@@ -9,6 +9,7 @@ using Microsoft.Extensions.Configuration;
 using Abp.Hangfire;
 using Abp.Hangfire.Configuration;
 
+
 namespace Test.NoAuth.Web.Startup
 {
     [DependsOn(
@@ -35,7 +36,7 @@ namespace Test.NoAuth.Web.Startup
                 .CreateControllersForAppServices(
                     typeof(NoAuthApplicationModule).GetAssembly()
                 );
-
+            
             //to delegate all background jobs to hangfire
             Configuration.BackgroundJobs.UseHangfire();
         }

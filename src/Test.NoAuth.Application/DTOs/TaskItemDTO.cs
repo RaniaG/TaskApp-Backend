@@ -7,7 +7,7 @@ using Test.NoAuth.TaskBC;
 
 namespace Test.NoAuth.DTOs
 {
-    //[AutoMapTo(typeof(TaskItem))]
+    [AutoMapTo(typeof(TaskItem))]
     public class TaskItemDTO
     {
         public int Id { get; set; }

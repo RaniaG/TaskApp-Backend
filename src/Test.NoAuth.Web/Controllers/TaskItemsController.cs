@@ -12,37 +12,38 @@ using Test.NoAuth.EntityFrameworkCore;
 using Test.NoAuth.Enums;
 using Test.NoAuth.TaskBC;
 using Hangfire;
+using Microsoft.AspNetCore.JsonPatch;
+using Abp.ObjectMapping;
 
 namespace Test.NoAuth.Web.Controllers
 {
-    //[Route("api/[controller]")]
     [ApiController]
     public class TaskItemsController : NoAuthControllerBase
     {
         private readonly NoAuthDbContext _context;
         private TaskAppService _taskAppService { get; set; }
+        public IObjectMapper _objectMapper { get; set; }
 
-        public TaskItemsController(NoAuthDbContext context, TaskAppService taskAppService)
+        public TaskItemsController(NoAuthDbContext context, TaskAppService taskAppService
+            , IObjectMapper objectMapper)
         {
             _context = context;
             _taskAppService = taskAppService;
+            _objectMapper = objectMapper;
         }
 
-        [HttpGet]
-        [Route("api/TaskItems")]
+        [HttpGet("api/TaskItems")]
         public ActionResult<IEnumerable<TaskItemGetAllOutputDTO>> GetAll()
         {
             return _taskAppService.GetAll().ToList();
         }
-        [HttpGet]
-        [Route("api/TaskItems/UnDeleted")]
+        [HttpGet("api/TaskItems/UnDeleted")]
         public ActionResult<IEnumerable<TaskItemDTO>> GetAllUndelted()
         {
             return _taskAppService.GetAllUndeleted().ToList();
         }
         
-        [HttpPost]
-        [Route("api/TaskItem")]
+        [HttpPost("api/TaskItem")]
         public ActionResult<TaskItemDTO> PostTaskItem(CreateTaskItemDTOInput task)
         {
 
@@ -59,8 +60,7 @@ namespace Test.NoAuth.Web.Controllers
             return TaskDTO;
         }
 
-        [HttpPatch]
-        [Route("api/TaskItem/{id}")]
+        [HttpPatch("api/TaskItem/{id}")]
         public ActionResult<TaskItemDTO> PatchTaskItem(int id, EditTaskItemDTOInput taskInput)
         {
 
@@ -77,8 +77,7 @@ namespace Test.NoAuth.Web.Controllers
                 return NotFound();
             }
         }
-        [HttpDelete]
-        [Route("api/TaskItem/{id}")]
+        [HttpDelete("api/TaskItem/{id}")]
         public ActionResult DeleteTaskItem(int id)
         {
             try
@@ -91,6 +90,28 @@ namespace Test.NoAuth.Web.Controllers
             {
                 return NotFound();
             }
+        }
+        [HttpPatch("api/Task/{id}")]
+        public ActionResult PatchTask(int id, [FromBody]JsonPatchDocument<EditTaskItemDTOInput> taskInput)
+        {
+            if (taskInput == null)
+                return BadRequest();
+            TaskItemDTO task = _taskAppService.GetById(id);
+            if (task == null)
+                return BadRequest();
+            EditTaskItemDTOInput TaskToPatch = new EditTaskItemDTOInput()
+            {
+                Body = task.Body,
+                Status = task.Status
+            };
+            
+            //validation for operation types
+            taskInput.ApplyTo(TaskToPatch);
+
+
+            //map from edit task item dto to task item
+            task =_taskAppService.UpdateTask(id,TaskToPatch);
+            return Ok(task);
         }
         //// PUT: api/TaskItems/5
         //[HttpPut("{id}")]

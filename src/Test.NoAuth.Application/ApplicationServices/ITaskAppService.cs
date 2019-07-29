@@ -19,6 +19,7 @@ namespace Test.NoAuth.ApplicationServices
         bool DeleteTask(int TaskId);
         void MarkTaskAsOverdue(int TaskId);
         void HardDeleteTasks();
+        TaskItemDTO UpdateTask(int id,EditTaskItemDTOInput taskDTO);
 
     }
 }

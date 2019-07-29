@@ -26,10 +26,14 @@ namespace Test.NoAuth.DomainServices
            int Id= _taskRepository.InsertAndGetId(task);
            return _taskRepository.Get(Id);
         }
+        public TaskItem UpdateTask(TaskItem task)
+        {
+            return _taskRepository.Update(task);
+        }
         
         public TaskItem RestoreTask(int TaskId)
         {
-            TaskItem task= _taskRepository.FirstOrDefault(TaskId);
+            TaskItem task= _taskRepository.Get(TaskId);
             if (task == null)
                 return null;
             task.IsDeleted = false;

@@ -11,6 +11,9 @@ namespace Test.NoAuth
             Configuration.Auditing.IsEnabledForAnonymousUsers = true;
 
             NoAuthLocalizationConfigurer.Configure(Configuration.Localization);
+
+
+            
         }
 
         public override void Initialize()

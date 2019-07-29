@@ -38,6 +38,12 @@ namespace Test.NoAuth.ApplicationServices
         {
            return _objectMapper.Map<TaskItemDTO>(_taskManager.CreateTask(_objectMapper.Map<TaskItem>(taskDTO)));
         }
+        public TaskItemDTO UpdateTask (int id, EditTaskItemDTOInput taskDTO)
+        {
+            TaskItem task = _taskManager.GetById(id);
+            _objectMapper.Map<EditTaskItemDTOInput, TaskItem>(taskDTO,task);
+            return _objectMapper.Map<TaskItemDTO>(_taskManager.UpdateTask(task));
+        }
         public TaskItemDTO ChangeTaskStatus(int TaskId, TaskStatusEnum newstatus)
         {
             return _objectMapper.Map<TaskItemDTO>(_taskManager.ChangeStatus(TaskId, newstatus));

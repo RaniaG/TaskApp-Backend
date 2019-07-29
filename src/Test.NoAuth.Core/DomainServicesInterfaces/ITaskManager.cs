@@ -20,6 +20,8 @@ namespace Test.NoAuth.DomainServicesInterfaces
         List<TaskItem> GetAll();
         TaskItem GetById(int Id);
         void MarkAsOverdue(int TaskId);
-       
+        TaskItem UpdateTask(TaskItem task);
+
+
     }
 }

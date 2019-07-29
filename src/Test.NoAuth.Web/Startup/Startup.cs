@@ -18,6 +18,7 @@ using Hangfire.Dashboard;
 using Test.NoAuth.ApplicationServices;
 using Hangfire.Logging;
 using Test.NoAuth.Web.Hangfire.CustomLog;
+using Test.NoAuth.Web.Middlewares;
 
 namespace Test.NoAuth.Web.Startup
 {
@@ -65,6 +66,9 @@ namespace Test.NoAuth.Web.Startup
             services.AddMvc(options =>
             {
                 options.Filters.Add(new AutoValidateAntiforgeryTokenAttribute());
+                options.ReturnHttpNotAcceptable = true;
+                //the following line for xml formating and must download its package
+                //options.OutputFormatters.Add(new XmlDataContractSerializerOutputFormatter());
             });
 
             //Configure Abp and Dependency Injection
@@ -79,7 +83,6 @@ namespace Test.NoAuth.Web.Startup
 
         public void Configure(IApplicationBuilder app, IBackgroundJobClient backgroundJobs,  IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
-            app.UseAbp(); //Initializes ABP framework.
 
             if (env.IsDevelopment())
             {
@@ -90,6 +93,9 @@ namespace Test.NoAuth.Web.Startup
             {
                 app.UseExceptionHandler("/Error");
             }
+            //custom middleware
+            app.UseMyMiddleware();
+
 
             app.UseStaticFiles();
 
@@ -103,6 +109,7 @@ namespace Test.NoAuth.Web.Startup
                 //AppPath = "http://your-app.net" //back to app button config
             });
 
+            app.UseAbp(); //Initializes ABP framework.
 
             app.UseMvc(routes =>
             {
