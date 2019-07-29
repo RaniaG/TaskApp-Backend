@@ -22,7 +22,7 @@ namespace Test.NoAuth
                       .ForMember(t => t.Id, options => options.Ignore())
                       .ForMember(t => t.Status, options => options.Ignore());
 
-                config.CreateMap<EditTaskItemDTOInput, TaskItem>();
+               
 
             });
         }

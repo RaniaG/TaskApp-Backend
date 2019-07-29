@@ -43,7 +43,7 @@ namespace Test.NoAuth.Web.Controllers
             return _taskAppService.GetAllUndeleted().ToList();
         }
         
-        [HttpPost("api/TaskItem")]
+        [HttpPost("api/TaskItems")]
         public ActionResult<TaskItemDTO> PostTaskItem(CreateTaskItemDTOInput task)
         {
 
@@ -60,7 +60,7 @@ namespace Test.NoAuth.Web.Controllers
             return TaskDTO;
         }
 
-        [HttpPatch("api/TaskItem/{id}")]
+        [HttpPatch("api/TaskItemsold/{id}")]
         public ActionResult<TaskItemDTO> PatchTaskItem(int id, EditTaskItemDTOInput taskInput)
         {
 
@@ -77,7 +77,7 @@ namespace Test.NoAuth.Web.Controllers
                 return NotFound();
             }
         }
-        [HttpDelete("api/TaskItem/{id}")]
+        [HttpDelete("api/TaskItems/{id}")]
         public ActionResult DeleteTaskItem(int id)
         {
             try
@@ -91,7 +91,7 @@ namespace Test.NoAuth.Web.Controllers
                 return NotFound();
             }
         }
-        [HttpPatch("api/Task/{id}")]
+        [HttpPatch("api/TaskItems/{id}")]
         public ActionResult PatchTask(int id, [FromBody]JsonPatchDocument<EditTaskItemDTOInput> taskInput)
         {
             if (taskInput == null)
@@ -108,8 +108,6 @@ namespace Test.NoAuth.Web.Controllers
             //validation for operation types
             taskInput.ApplyTo(TaskToPatch);
 
-
-            //map from edit task item dto to task item
             task =_taskAppService.UpdateTask(id,TaskToPatch);
             return Ok(task);
         }
